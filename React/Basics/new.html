@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A fast, accessible landing page with minimal layout shift." />
+    <title>Pineapple Pro — The Sweetest Landing Page</title>
+
+    <!-- Performance / CLS hygiene -->
+    <!-- Use a system font stack to avoid FOIT/FOUT and font reflow -->
+    <style>
+        /* ====== Base / Reset (no layout shift) ====== */
+        :root {
+            --bg: #0b1020;
+            --surface: #121834;
+            --muted: #b7c3ff;
+            --text: #f7f9ff;
+            --accent: #ffd24d;
+            /* AA contrast on dark */
+            --accent-2: #7cf7d4;
+            --ring: #8ab4ff;
+            color-scheme: dark light;
+        }
+
+        html {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        svg {
+            display: block;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible {
+            outline: 3px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        /* Prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* ====== Layout ====== */
+        .container {
+            width: min(1100px, 92%);
+            margin-inline: auto;
+        }
+
+        header[role="banner"] {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: saturate(140%) blur(8px);
+            background: color-mix(in oklab, var(--bg), transparent 40%);
+            border-bottom: 1px solid color-mix(in oklab, var(--muted), transparent 70%);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: clamp(12px, 2vw, 18px) 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .brand svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Accessible menu using <details> (no JS, no CLS) */
+        .menu {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+        }
+
+        details.nav-toggle {
+            display: none;
+        }
+
+        .menu a {
+            padding: .5rem .75rem;
+            border-radius: 999px;
+        }
+
+        .menu a[aria-current="page"] {
+            background: color-mix(in oklab, var(--accent), #000 20%);
+            color: #111;
+        }
+
+        .cta {
+            background: var(--accent);
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            padding: .6rem .95rem;
+            font-weight: 700;
+        }
+
+        /* Hero */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: min(4vw, 32px);
+            align-items: center;
+            padding: clamp(32px, 6vw, 80px) 0;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.9rem, 2.8vw + 1rem, 3.2rem);
+            line-height: 1.1;
+            margin: 0 0 .75rem;
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: clamp(1rem, .6vw + .9rem, 1.125rem);
+        }
+
+        .hero .actions {
+            display: flex;
+            gap: .75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .secondary {
+            background: transparent;
+            border: 1px solid color-mix(in oklab, var(--muted), transparent 50%);
+            color: var(--text);
+            border-radius: 12px;
+            padding: .6rem .95rem;
+        }
+
+        .hero-media {
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #1a2148, #121834);
+            border: 1px solid color-mix(in oklab, var(--muted), transparent 60%);
+        }
+
+        /* Reserve media aspect ratio to prevent CLS */
+        .frame {
+            aspect-ratio: 16 / 10;
+            width: 100%;
+        }
+
+        /* Features */
+        .features {
+            padding: clamp(32px, 6vw, 72px) 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid color-mix(in oklab, var(--muted), transparent 60%);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .card h3 {
+            margin: .25rem 0 .25rem;
+            font-size: 1.05rem;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        /* Testimonial */
+        .testimonial {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 16px;
+            align-items: center;
+            margin-top: 24px;
+        }
+
+        .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #222;
+            overflow: hidden;
+        }
+
+        /* Footer */
+        footer {
+            padding: 28px 0 40px;
+            border-top: 1px solid color-mix(in oklab, var(--muted), transparent 70%);
+            color: var(--muted);
+        }
+
+        /* Mobile */
+        @media (max-width: 820px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            details.nav-toggle {
+                display: block;
+            }
+
+            .menu {
+                display: none;
+            }
+
+            details.nav-toggle[open]+.menu {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: .25rem;
+                padding-bottom: 10px;
+            }
+
+            summary.btn {
+                list-style: none;
+                user-select: none;
+            }
+
+            summary.btn::-webkit-details-marker {
+                display: none;
+            }
+
+            .btn {
+                border: 1px solid color-mix(in oklab, var(--muted), transparent 50%);
+                border-radius: 12px;
+                padding: .5rem .75rem;
+            }
+        }
+
+        /* Skip link */
+        .skip {
+            position: absolute;
+            left: -9999px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        .skip:focus {
+            position: fixed;
+            left: 12px;
+            top: 12px;
+            width: auto;
+            height: auto;
+            padding: .5rem .75rem;
+            background: var(--accent-2);
+            color: #002;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <a class="skip" href="#main">Skip to main content</a>
+
+    <!-- Banner / Header -->
+    <header role="banner">
+        <div class="container nav" aria-label="Top bar">
+            <a class="brand" href="#" aria-label="Pineapple Pro home">
+                <!-- Inline SVG avoids CLS from external images -->
+                <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false"
+                    fill="currentColor">
+                    <path
+                        d="M7 7c0-1.657 1.79-3 5-3-1.5 0-2.5-1-2.5-2.5C11.5 3 14 4 14 6c2 0 3 .5 3 1.5S15.5 9 12 9 7 8.657 7 7z" />
+                    <path
+                        d="M12 10c-3.866 0-7 1.79-7 5.5S8.134 22 12 22s7-2.79 7-6.5S15.866 10 12 10zm0 2c2.761 0 5 1.343 5 3.5S14.761 19 12 19s-5-1.343-5-3.5S9.239 12 12 12z" />
+                </svg>
+                Pineapple Pro
+            </a>
+
+            <details class="nav-toggle">
+                <summary class="btn" aria-label="Open menu">Menu</summary>
+            </details>
+
+            <nav class="menu" aria-label="Primary">
+                <a href="#features" aria-current="page">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#about">About</a>
+                <a class="cta" href="#signup">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main id="main" class="container" role="main">
+        <!-- Hero -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div>
+                <h1 id="hero-title">Launch faster with a landing page that doesn’t jump around</h1>
+                <p class="muted">Built with zero-layout-shift patterns, strong color contrast, keyboard-friendly
+                    navigation, and screen‑reader semantics out of the box.</p>
+                <div class="actions">
+                    <a class="cta" href="#signup">Start free</a>
+                    <a class="secondary" href="#features">See features</a>
+                </div>
+            </div>
+            <div class="hero-media" aria-label="Product preview">
+                <!-- Reserve space with aspect-ratio to prevent CLS -->
+                <div class="frame">
+                    <!-- Example placeholder image with intrinsic size to avoid CLS -->
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1000' viewBox='0 0 1600 1000'%3E%3Cdefs/%3E%3Crect width='1600' height='1000' fill='%23121834'/%3E%3Crect x='80' y='80' width='1440' height='840' rx='20' ry='20' fill='%231a2148' stroke='%235a64a8'/%3E%3Ctext x='800' y='520' fill='%23b7c3ff' text-anchor='middle' font-size='48' font-family='system-ui, -apple-system, Segoe UI, Roboto'%3EStable media frame (no CLS)%3C/text%3E%3C/svg%3E"
+                        width="1600" height="1000" alt="Stable preview frame" loading="eager" decoding="async" />
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section id="features" class="features" aria-labelledby="feat-title">
+            <h2 id="feat-title">Everything you need</h2>
+            <div class="grid" role="list">
+                <article class="card" role="listitem" aria-labelledby="f1">
+                    <h3 id="f1">Rock‑solid layout</h3>
+                    <p class="muted">Images reserve space with <code>width</code>/<code>height</code> or
+                        <code>aspect-ratio</code>, avoiding surprise shifts (CLS).</p>
+                </article>
+                <article class="card" role="listitem" aria-labelledby="f2">
+                    <h3 id="f2">Accessible by default</h3>
+                    <p class="muted">Landmarks, labels, focus styles, and a skip link help Lighthouse a11y ≥ 90.</p>
+                </article>
+                <article class="card" role="listitem" aria-labelledby="f3">
+                    <h3 id="f3">Responsive everywhere</h3>
+                    <p class="muted">Fluid type and grids adapt cleanly from phones to desktops without reflow traps.
+                    </p>
+                </article>
+            </div>
+
+            <div class="testimonial" aria-labelledby="t-name" aria-describedby="t-quote">
+                <img class="avatar"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='144' height='144' viewBox='0 0 144 144'%3E%3Ccircle cx='72' cy='72' r='72' fill='%23222954'/%3E%3Ccircle cx='72' cy='56' r='28' fill='%23303b6f'/%3E%3Crect x='34' y='92' width='76' height='30' rx='15' fill='%23303b6f'/%3E%3C/svg%3E"
+                    width="144" height="144" alt="Avatar" loading="lazy" decoding="async" />
+                <div>
+                    <strong id="t-name">Casey Q.</strong>
+                    <p id="t-quote" class="muted">“Scores 100 on CLS in our CI runs. Clicking around never nudges the
+                        layout.”</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section id="pricing" class="features" aria-labelledby="price-title">
+            <h2 id="price-title">Simple pricing</h2>
+            <div class="grid" role="list">
+                <article class="card" role="listitem" aria-labelledby="p1">
+                    <h3 id="p1">Starter</h3>
+                    <p class="muted">$0 — Try it out</p>
+                </article>
+                <article class="card" role="listitem" aria-labelledby="p2">
+                    <h3 id="p2">Pro</h3>
+                    <p class="muted">$12/mo — For growing sites</p>
+                </article>
+                <article class="card" role="listitem" aria-labelledby="p3">
+                    <h3 id="p3">Business</h3>
+                    <p class="muted">$29/mo — Teams & campaigns</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- About / FAQ placeholder -->
+        <section id="about" class="features" aria-labelledby="about-title">
+            <h2 id="about-title">Built for Lighthouse</h2>
+            <p class="muted">Avoid layout shifts: include explicit <code>width</code>/<code>height</code> on images,
+                reserve space for async UI, use system fonts or <code>font-display: swap</code>,
+                and keep sticky bars sized from the start.</p>
+        </section>
+
+        <!-- Signup -->
+        <section id="signup" class="features" aria-labelledby="signup-title">
+            <h2 id="signup-title">Get started</h2>
+            <form aria-describedby="signup-help" action="#" method="post">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" required
+                    style="display:block;width:min(520px,100%);max-width:100%;margin:.35rem 0 .75rem;padding:.6rem .75rem;border-radius:10px;border:1px solid color-mix(in oklab, var(--muted), transparent 50%);background:#0f1530;color:var(--text)" />
+                <button class="cta" type="submit">Create account</button>
+                <p id="signup-help" class="muted" style="margin-top:.5rem">We’ll only use your email for account setup.
+                    No spam.</p>
+            </form>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <div class="container"
+            style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+            <p>© <span id="year">2025</span> Pineapple Pro</p>
+            <nav aria-label="Footer">
+                <a href="#features">Features</a> · <a href="#pricing">Pricing</a> · <a href="#about">About</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        // Set year without layout shift
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

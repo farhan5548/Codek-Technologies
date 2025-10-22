@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern CSS</title>
+    <style>
+        :root {
+            background: #121831;
+            /* color: white; */
+            --primary-color: #ffffff;
+            --font-size-base: 20px;
+            /* for light and dark mode */
+            /* color-scheme: dark light;  */
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: black;
+                --text: white;
+            }
+        }
+
+        body {
+            color: var(--primary-color);
+            font-size: var(--font-size-base);
+        }
+
+
+        .container {
+            background-color: #eaee;
+            display: flex;
+            padding: 1rem;
+        }
+
+        .item {
+            border: 2px solid black;
+            border-radius: 5px;
+            padding: 2rem;
+            margin: 1rem;
+        }
+
+        .container2 {
+            background-color: rgba(39, 169, 209, 0.933);
+            display: grid;
+            grid-template-columns: 200px 200px;
+            grid-template-rows: 100px;
+            gap: 1rem;
+            padding: 1rem;
+            /* justify-items: center;
+            align-items: center; */
+            justify-content: center;
+            align-content: center;
+        }
+
+        .items {
+            text-align: center;
+            align-items: center;
+            border: 2px solid black;
+            border-radius: 5px;
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section role="article" aria-labelledby="flexbox">
+        <div class="container">
+            <div class="item">One</div>
+            <div class="item">Two</div>
+            <div class="item">Three</div>
+            <div class="item">Four</div>
+        </div>
+    </section>
+
+    <section role="article" aria-labelledby="grid">
+        <div class="container2">
+            <div class="items">One</div>
+            <div class="items">Two</div>
+            <div class="items">Three</div>
+            <div class="items">Four</div>
+        </div>
+    </section>
+</body>
+
+</html>
